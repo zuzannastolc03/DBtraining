@@ -6,7 +6,6 @@ import com.luv2code.cruddemo.entity.InstructorDetail;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,5 +117,25 @@ public class AppDAOImpl implements AppDAO {
 
         // delete the course
         entityManager.remove(tempCourse);
+    }
+
+    @Override
+    @Transactional
+    public void save(Course theCourse) {
+        entityManager.persist(theCourse);
+    }
+
+    @Override
+    public Course findCourseAndReviewsByCourseId(int theId) {
+        // create query
+        TypedQuery<Course> query = entityManager.createQuery(
+                "select c from Course c "
+                + "JOIN FETCH c.reviews "
+                + "WHERE c.id =: data", Course.class
+        );
+        query.setParameter("data", theId);
+        // execute query
+        Course course = query.getSingleResult();
+        return course;
     }
 }
